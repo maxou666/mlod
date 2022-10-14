@@ -1,4 +1,4 @@
-#include "liste-chainee.h"
+#include "liste-chainee.h"	
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -11,17 +11,27 @@ bool estVide(Liste l) {
 
 // créer une liste d'un seul élément contenant la valeur v
 Liste creer(Element v){
-	return TODO;
+		Liste cell =malloc(sizeof(Cellule));
+		if (cell!=NULL){
+	  		cell->val = v;	
+	  		cell ->suiv = NULL;
+	  	}
+	return cell; 			
 }
 
 // ajoute l'élément v en tete de la liste l
 Liste ajoutTete(Element v, Liste l) {
-	return TODO;
+	  Liste element =malloc(sizeof(Cellule));
+	  element->val = v;
+	  element->suiv = l;
+	  l = element;
+	  	  
+	return l;
 }
 
 
 void afficheElement(Element e) {
-	printf("%i ",e);
+	printf("%i ",e);	
 }
 
 // affiche tous les éléments de la liste l

@@ -7,7 +7,7 @@ typedef int Element;
 struct cellule_s {
 	Element val;
 	struct cellule_s* suiv;
-};
+}; 
 
 typedef struct cellule_s Cellule;
 
