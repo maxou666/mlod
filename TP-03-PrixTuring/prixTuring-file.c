@@ -86,32 +86,92 @@ void afficheWinners(Info infos[51]) {
 
 }
 
-void infosAnnee (int year ) {
+void sortTuringWinnersByYear () {
 	Info infos[51];
 	readWinners(infos);
-	int n =0;
-	
-	while (n <= 49) {
-
-		if ( year == infos[n].annee ) {
-			printf("L'annee %i le(s) gagnant(s) ont été :  %s\n",infos[n].annee,infos[n].nom);	
-			printf("Nature des travaux : %s\n",infos[n].sujet);	
-		}
-		n++;
-	}		
+	int i,j,c;
+	char * o;
+	char * k;
+	for(i=0;i<50;i++){
+   	 for(j=i+1;j<50;j++){
+        	if ( infos[i].annee > infos[j].annee ) {
+          	  c = infos[i].annee;
+          	  o = infos[i].nom;
+          	  k = infos[i].sujet;
+          	  infos[i].annee = infos[j].annee;
+          	  infos[i].nom = infos[j].nom;
+          	  infos[i].sujet = infos[j].sujet;
+          	  infos[j].annee = c;
+          	  infos[j].nom = o;
+          	  infos[j].sujet = k ;	
+          	  
+        }
+        }
+        }
+        afficheWinners (infos);
 }
 
+void addNewWinner(Info infos[] ) {
+
+	int annee;
+		char gagnants[100];
+		char travaux[100];
+		printf("Entrer une annee:");
+		scanf("%i",&annee);
+		printf("Entrer le(s) gagnants :");
+		scanf("%s",gagnants);
+		printf("Nature des travaux : ");
+		scanf("%s",travaux);
+	
+
+	       
+
+	//afficheWinners (infos);
+}
+//void fonction (FILE* f) {
+//		printf("Nature des travaux :");	
+//	Info infos[50];
+//
+//	int n =0;
+//
+//	while (n < 50) {
+//		printf("Nature des travaux :");	
+//		
+//		
+		
+//	}	
+//	afficheWinners(infos);
+	
+//}
 
 
 int main(int argc, char* argv[]) {
+	//sortTuringWinnersByYear();	
+	//printf("Nature des travaux : ");	
+	//char fileName[] = "turingWinners.txt";
+	//FILE* f;
+	//f = fopen(fileName,"r");
+	//printf("Nature des travaux : ");
+		
+	//fonction(f);
+	//if ( !strcmp(argv[1],"infosAnnee")) {
+	//	infosAnnee(atoi(argv[2]));
+	//}
+	Info infos[51];
+	readWinners( infos);
+		
 
-	if ( !strcmp(argv[1],"infosAnnee")) {
-		infosAnnee(atoi(argv[2]));
+	for(int i=0;i<argc;i++){
+		printf("%s",argv[i]);
+	}
+	if ( !strcmp(argv[1],"addNewWinner")) {
+		
+		addNewWinner(infos);
 	}
 
+
 	//infosAnnee(a);
-	//Info infos[51];
-	//readWinners(infos);
+	
 	//afficheWinners(infos);
 	
 
