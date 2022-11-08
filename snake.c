@@ -269,7 +269,7 @@ void UpdateGame(void)
           	  }
           	  
           	  
-            // Collision with yourself
+            // Collision with yourself	
             for (int i = 1; i < counterTail; i++)
             {
                 if ((snake[0].position.x == snake[i].position.x) && (snake[0].position.y == snake[i].position.y)) gameOver = true;
