@@ -33,6 +33,22 @@ typedef struct Snake {
     Color color;
 } Snake;
 
+typedef struct Ennemy {
+    Vector2 position;
+    Vector2 size;
+    Vector2 speed;
+    bool active;
+    Color color;
+} Ennemy;
+
+typedef struct Laser {
+    Vector2 position;
+    Vector2 size;
+    Vector2 speed;
+    bool active;
+    Color color;
+} Laser;
+
 typedef struct Food {
     Vector2 position;
     Vector2 size;
@@ -52,6 +68,10 @@ static bool pause = false;
 
 static Food fruit = { 0 };
 static Snake snake[SNAKE_LENGTH] = { 0 };
+
+static Ennemy ennemy = {0};
+static Laser laser = {0};
+
 static Vector2 snakePosition[SNAKE_LENGTH] = { 0 };
 static bool allowMove = false;
 static Vector2 offset = { 0 };
@@ -125,8 +145,8 @@ void InitGame(void)
         snake[i].size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
         snake[i].speed = (Vector2){ SQUARE_SIZE, 0 };
 
-        if (i == 0) snake[i].color = DARKBLUE;
-        else snake[i].color = BLUE;
+        if (i == 0) snake[i].color = YELLOW;
+        else snake[i].color = GREEN;
     }
 
     for (int i = 0; i < SNAKE_LENGTH; i++)
@@ -135,8 +155,17 @@ void InitGame(void)
     }
 
     fruit.size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
-    fruit.color = SKYBLUE;
+    fruit.color = BLUE;
     fruit.active = false;
+    
+    laser.active = true;
+    
+    ennemy.size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
+    ennemy.color = BLACK;
+    ennemy.active = false;
+    
+    
+   
 }
 
 // Update game (one frame)
@@ -169,6 +198,17 @@ void UpdateGame(void)
                 snake[0].speed = (Vector2){ 0, SQUARE_SIZE };
                 allowMove = false;
             }
+            
+            // ajout du laser lorsqu'on presse espace
+            if (IsKeyPressed(KEY_SPACE) && laser.active)
+            {
+            	laser.size = (Vector2){ 0.5*SQUARE_SIZE, 0.5*SQUARE_SIZE };
+   		laser.color = RED;
+            	laser.position =(Vector2){ snake[0].position.x+snake[0].speed.x+0.25*SQUARE_SIZE, snake[0].position.y+0.25*SQUARE_SIZE+snake[0].speed.y };
+                laser.speed = (Vector2){ 2*snake[0].speed.x, 2*snake[0].speed.y };
+                laser.active = false;
+                // JE sais oas c est quoiallowMove = false;
+            }
 
             // Snake movement
             for (int i = 0; i < counterTail; i++) snakePosition[i] = snake[i].position;
@@ -186,6 +226,20 @@ void UpdateGame(void)
                     else snake[i].position = snakePosition[i-1];
                 }
             }
+            // Laser mouvement
+            if ((framesCounter%5) == 0)
+            {
+            	laser.position.x += laser.speed.x;
+            	laser.position.y += laser.speed.y;            	
+            }
+            
+            // Ennemy position 
+            if ((framesCounter%5) == 0)
+            {
+            	ennemy.position.x += ennemy.speed.x;
+            	ennemy.position.y += ennemy.speed.y;            	
+            }
+            
 
             // Wall behaviour
             if (((snake[0].position.x) > (screenWidth - offset.x)) ||
@@ -194,8 +248,28 @@ void UpdateGame(void)
             {
                 gameOver = true;
             }
-
-            // Collision with yourself
+            // Wall behaviour laser
+            if(!laser.active)
+            
+           	 if (((laser.position.x) > (screenWidth - offset.x)) ||
+           	     ((laser.position.y) > (screenHeight - offset.y)) ||
+           	     (laser.position.x < 0) || (laser.position.y < 0))
+          	  {	
+           	    laser.active = true;
+          	  }
+          	  
+	    // Wall behaviour ennemy
+            if(ennemy.active)
+            	
+           	 if (((ennemy.position.x) > (screenWidth - offset.x)) ||
+           	     ((ennemy.position.y) > (screenHeight - offset.y)) ||
+           	     (ennemy.position.x < 0) || (ennemy.position.y < 0))
+          	  {
+           	    ennemy.active = false;		
+          	  }
+          	  
+          	  
+            // Collision with yourself	
             for (int i = 1; i < counterTail; i++)
             {
                 if ((snake[0].position.x == snake[i].position.x) && (snake[0].position.y == snake[i].position.y)) gameOver = true;
@@ -205,6 +279,7 @@ void UpdateGame(void)
             if (!fruit.active)
             {
                 fruit.active = true;
+               
                 fruit.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
 
                 for (int i = 0; i < counterTail; i++)
@@ -215,6 +290,38 @@ void UpdateGame(void)
                         i = 0;
                     }
                 }
+            }
+            
+            // Ennemy position calculation
+
+	    if (!ennemy.active)
+            {
+            	int rdm;		
+                ennemy.active = true;
+                rdm = GetRandomValue(0,3);
+                
+                // Spawn en haut
+                if (rdm==0) {
+                	ennemy.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2 , offset.y/2  };
+                	ennemy.speed = (Vector2){ 0, 0.5*SQUARE_SIZE };
+                }
+                // Spawn à gauche
+                else if (rdm==1) {
+                	ennemy.position = (Vector2){ ((screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2 , GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };	
+                	ennemy.speed = (Vector2){ -0.5*SQUARE_SIZE, 0 };
+                }
+                
+                // Spawn en bas
+                else if (rdm==2) {
+                	ennemy.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2 , ((screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };	
+                	ennemy.speed = (Vector2){ 0, -0.5*SQUARE_SIZE };
+                }
+                // Spawn à droite
+                else 	  {
+                	ennemy.position = (Vector2){ offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };	
+                	ennemy.speed = (Vector2){ 0.5*	SQUARE_SIZE, 0 };
+                }
+               
             }
 
             // Collision
@@ -261,10 +368,16 @@ void DrawGame(void)
 
             // Draw snake
             for (int i = 0; i < counterTail; i++) DrawRectangleV(snake[i].position, snake[i].size, snake[i].color);
+            
+           // Draw laser
+            DrawRectangleV(laser.position, laser.size, laser.color);
 
             // Draw fruit to pick
             DrawRectangleV(fruit.position, fruit.size, fruit.color);
-
+            
+            // Draw ennemy
+	    DrawRectangleV(ennemy.position, ennemy.size, ennemy.color);
+	    
             if (pause) DrawText("GAME PAUSED", screenWidth/2 - MeasureText("GAME PAUSED", 40)/2, screenHeight/2 - 40, 40, GRAY);
         }
         else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth()/2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20)/2, GetScreenHeight()/2 - 50, 20, GRAY);
