@@ -12,7 +12,7 @@
 ********************************************************************************************/
 
 #include "raylib.h"
-
+#include <time.h>
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
 #endif
@@ -39,6 +39,7 @@ typedef struct Ennemy {
     Vector2 speed;
     bool active;
     Color color;
+    int kills;
 } Ennemy;
 
 typedef struct Laser {
@@ -56,6 +57,8 @@ typedef struct Food {
     Color color;
 } Food;
 
+
+
 //------------------------------------------------------------------------------------
 // Global Variables Declaration
 //------------------------------------------------------------------------------------
@@ -69,6 +72,7 @@ static bool pause = false;
 static Food fruit = { 0 };
 static Snake snake[SNAKE_LENGTH] = { 0 };
 
+static Food gunfood= {0};
 static Ennemy ennemy = {0};
 static Laser laser = {0};
 
@@ -163,10 +167,17 @@ void InitGame(void)
     ennemy.size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
     ennemy.color = BLACK;
     ennemy.active = false;
+    ennemy.kills = 0;
     
+    gunfood.size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
+    gunfood.color = YELLOW;
+    gunfood.active = false;
+    gunfood.position=(Vector2){-100,-100};
     
    
 }
+
+
 
 // Update game (one frame)
 void UpdateGame(void)
@@ -205,8 +216,12 @@ void UpdateGame(void)
             	laser.size = (Vector2){ 0.5*SQUARE_SIZE, 0.5*SQUARE_SIZE };
    		laser.color = RED;
             	laser.position =(Vector2){ snake[0].position.x+snake[0].speed.x+0.25*SQUARE_SIZE, snake[0].position.y+0.25*SQUARE_SIZE+snake[0].speed.y };
-                laser.speed = (Vector2){ 2*snake[0].speed.x, 2*snake[0].speed.y };
-                laser.active = false;
+                laser.speed = (Vector2){ 0.5*snake[0].speed.x, 0.5*snake[0].speed.y };
+                if ( !gunfood.active ) {
+                   laser.active = false;
+                }
+               
+      
                 // JE sais oas c est quoiallowMove = false;
             }
 
@@ -227,14 +242,14 @@ void UpdateGame(void)
                 }
             }
             // Laser mouvement
-            if ((framesCounter%5) == 0)
+            if ((framesCounter%1) == 0)
             {
             	laser.position.x += laser.speed.x;
             	laser.position.y += laser.speed.y;            	
             }
             
             // Ennemy position 
-            if ((framesCounter%5) == 0)
+            if ((framesCounter%8) == 0)
             {
             	ennemy.position.x += ennemy.speed.x;
             	ennemy.position.y += ennemy.speed.y;            	
@@ -259,7 +274,7 @@ void UpdateGame(void)
           	  }
           	  
 	    // Wall behaviour ennemy
-            if(ennemy.active)
+            if(ennemy.active )
             	
            	 if (((ennemy.position.x) > (screenWidth - offset.x)) ||
            	     ((ennemy.position.y) > (screenHeight - offset.y)) ||
@@ -274,7 +289,31 @@ void UpdateGame(void)
             {
                 if ((snake[0].position.x == snake[i].position.x) && (snake[0].position.y == snake[i].position.y)) gameOver = true;
             }
-
+            
+            // Collision with ennemy	
+ 	    for (int i = 0; i < counterTail; i++)
+            {
+                if ((snake[i].position.x == ennemy.position.x) && (snake[i].position.y == ennemy.position.y)  ) {
+                   if (i ==0 ) {
+                  	 gameOver = true;
+                   }
+                   else if (counterTail>1) {
+                     for (int j = 0; j < counterTail-i; j++){
+                      
+                       snake[counterTail].position = snakePosition[counterTail + 1];
+                       counterTail -= 1;
+                       
+                     }
+                   }  
+                }
+                
+            }
+            if ((framesCounter%20) == 0)
+            {
+            	for (int i = 1; i < counterTail; i++) {
+            	   snake[i].color = GREEN;
+            	} 	
+            }
             // Fruit position calculation
             if (!fruit.active)
             {
@@ -291,10 +330,28 @@ void UpdateGame(void)
                     }
                 }
             }
+            // Gunfood position calculation
+            if (ennemy.kills == 3)
+            {
+            	
+                ennemy.kills = 0;
+                gunfood.active=true;
+               
+                gunfood.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
+
+                for (int i = 0; i < counterTail; i++)
+                {
+                    while ((gunfood.position.x == snake[i].position.x) && (gunfood.position.y == snake[i].position.y))
+                    {
+                        gunfood.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
+                        i = 0;
+                    }
+                }
+            }
             
             // Ennemy position calculation
 
-	    if (!ennemy.active)
+	    if (!ennemy.active )
             {
             	int rdm;		
                 ennemy.active = true;
@@ -303,23 +360,23 @@ void UpdateGame(void)
                 // Spawn en haut
                 if (rdm==0) {
                 	ennemy.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2 , offset.y/2  };
-                	ennemy.speed = (Vector2){ 0, 0.5*SQUARE_SIZE };
+                	ennemy.speed = (Vector2){ 0, SQUARE_SIZE };
                 }
                 // Spawn à gauche
                 else if (rdm==1) {
                 	ennemy.position = (Vector2){ ((screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2 , GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };	
-                	ennemy.speed = (Vector2){ -0.5*SQUARE_SIZE, 0 };
+                	ennemy.speed = (Vector2){ -SQUARE_SIZE, 0 };
                 }
                 
                 // Spawn en bas
                 else if (rdm==2) {
                 	ennemy.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2 , ((screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };	
-                	ennemy.speed = (Vector2){ 0, -0.5*SQUARE_SIZE };
+                	ennemy.speed = (Vector2){ 0, -SQUARE_SIZE };
                 }
                 // Spawn à droite
                 else 	  {
                 	ennemy.position = (Vector2){ offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };	
-                	ennemy.speed = (Vector2){ 0.5*	SQUARE_SIZE, 0 };
+                	ennemy.speed = (Vector2){ SQUARE_SIZE, 0 };
                 }
                
             }
@@ -332,6 +389,27 @@ void UpdateGame(void)
                 counterTail += 1;
                 fruit.active = false;
             }
+            
+            // Collision avec gunfood
+            if ((snake[0].position.x < (gunfood.position.x + gunfood.size.x) && (snake[0].position.x + snake[0].size.x) > gunfood.position.x) &&
+                (snake[0].position.y < (gunfood.position.y + gunfood.size.y) && (snake[0].position.y + snake[0].size.y) > gunfood.position.y))
+            {
+                gameOver = true;
+            }
+            // Collision missile ennemy
+            if ((laser.position.x < (ennemy.position.x + ennemy.size.x) && (laser.position.x + laser.size.x) > ennemy.position.x) &&
+                (laser.position.y < (ennemy.position.y + ennemy.size.y) && (laser.position.y + laser.size.y) > ennemy.position.y))
+            {
+                
+                laser.active = false;
+                ennemy.kills +=1;
+                ennemy.active = false;
+                
+            }
+            
+          
+           
+            
 
             framesCounter++;
         }
@@ -378,6 +456,9 @@ void DrawGame(void)
             // Draw ennemy
 	    DrawRectangleV(ennemy.position, ennemy.size, ennemy.color);
 	    
+	    // Draw gunfood to pick
+            DrawRectangleV(gunfood.position, gunfood.size, gunfood.color);
+            
             if (pause) DrawText("GAME PAUSED", screenWidth/2 - MeasureText("GAME PAUSED", 40)/2, screenHeight/2 - 40, 40, GRAY);
         }
         else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth()/2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20)/2, GetScreenHeight()/2 - 50, 20, GRAY);
