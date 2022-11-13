@@ -21,7 +21,7 @@
  
  ## Commandes
   
- Pour se déplacer, le joueur utilisera les touches suivantes pour le déplacement correspondant : Z / monter; S / descendre; Q / gauche; D / droite.
+ Pour se déplacer, le joueur utilisera les touches suivantes pour le déplacement correspondant : ARROW_UP / monter; ARROW_DOWN / descendre; ARROW_LEFT / gauche; ARROW_RIGHT / droite.
  Pour utiliser le laser, il suffit d'appuyer sur ESPACE.
  
   ## URL Vidéo
