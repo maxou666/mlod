@@ -57,7 +57,7 @@ typedef struct Food {
     Color color;
 } Food;
 
-
+struct Laser listOfLasers[15];
 
 //------------------------------------------------------------------------------------
 // Global Variables Declaration
@@ -74,7 +74,8 @@ static Snake snake[SNAKE_LENGTH] = { 0 };
 
 static Food gunfood= {0};
 static Ennemy ennemy = {0};
-static Laser laser = {0};
+
+
 
 static Vector2 snakePosition[SNAKE_LENGTH] = { 0 };
 static bool allowMove = false;
@@ -149,7 +150,7 @@ void InitGame(void)
         snake[i].size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
         snake[i].speed = (Vector2){ SQUARE_SIZE, 0 };
 
-        if (i == 0) snake[i].color = YELLOW;
+        if (i == 0) snake[i].color = DARKGREEN;
         else snake[i].color = GREEN;
     }
 
@@ -159,10 +160,17 @@ void InitGame(void)
     }
 
     fruit.size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
-    fruit.color = BLUE;
+    fruit.color = RED;
     fruit.active = false;
+    listOfLasers[0].active = false;
+    for (int i = 1; i < 5; i++)
+    {
+        listOfLasers[i].active = false;
+    }
     
-    laser.active = true;
+    
+    
+    
     
     ennemy.size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
     ennemy.color = BLACK;
@@ -211,19 +219,31 @@ void UpdateGame(void)
             }
             
             // ajout du laser lorsqu'on presse espace
-            if (IsKeyPressed(KEY_SPACE) && laser.active)
-            {
-            	laser.size = (Vector2){ 0.5*SQUARE_SIZE, 0.5*SQUARE_SIZE };
-   		laser.color = RED;
-            	laser.position =(Vector2){ snake[0].position.x+snake[0].speed.x+0.25*SQUARE_SIZE, snake[0].position.y+0.25*SQUARE_SIZE+snake[0].speed.y };
-                laser.speed = (Vector2){ 0.5*snake[0].speed.x, 0.5*snake[0].speed.y };
-                if ( !gunfood.active ) {
-                   laser.active = false;
-                }
-               
+            
+            	if (IsKeyPressed(KEY_SPACE))
+            	
+           	 {
+           	 
+           	 int a = 0;
+           	 if (gunfood.active) {
+           	 while (listOfLasers[a].active==true){
+           	
+           	    a+=1;
+           	 
+           	 }
+           	 }
+           	 if ( listOfLasers[a].active==false) {
+            		listOfLasers[a].size = (Vector2){ 0.5*SQUARE_SIZE, 0.5*SQUARE_SIZE };
+   			listOfLasers[a].color = RED;
+            		listOfLasers[a].position =(Vector2){ snake[0].position.x+snake[0].speed.x+0.25*SQUARE_SIZE, snake[0].position.y+0.25*SQUARE_SIZE+snake[0].speed.y };
+              	  listOfLasers[a].speed = (Vector2){ 0.5*snake[0].speed.x, 0.5*snake[0].speed.y };
+              	  
+             	      listOfLasers[a].active = true;
+              	  }
+              }
       
                 // JE sais oas c est quoiallowMove = false;
-            }
+            
 
             // Snake movement
             for (int i = 0; i < counterTail; i++) snakePosition[i] = snake[i].position;
@@ -242,10 +262,15 @@ void UpdateGame(void)
                 }
             }
             // Laser mouvement
-            if ((framesCounter%1) == 0)
+            for (int i =0; i<5;i++) {
+            if ((framesCounter%1) == 0 )
             {
-            	laser.position.x += laser.speed.x;
-            	laser.position.y += laser.speed.y;            	
+             	
+             		
+            			listOfLasers[i].position.x += listOfLasers[i].speed.x;
+            			listOfLasers[i].position.y += listOfLasers[i].speed.y;   
+            		
+            	}      	
             }
             
             // Ennemy position 
@@ -264,15 +289,16 @@ void UpdateGame(void)
                 gameOver = true;
             }
             // Wall behaviour laser
-            if(!laser.active)
+             for (int i =0; i<5;i++) {
+            if(listOfLasers[i].active)
             
-           	 if (((laser.position.x) > (screenWidth - offset.x)) ||
-           	     ((laser.position.y) > (screenHeight - offset.y)) ||
-           	     (laser.position.x < 0) || (laser.position.y < 0))
+           	 if (((listOfLasers[i].position.x) > (screenWidth - offset.x)) ||
+           	     ((listOfLasers[i].position.y) > (screenHeight - offset.y)) ||
+           	     (listOfLasers[i].position.x < 0) || (listOfLasers[i].position.y < 0))
           	  {	
-           	    laser.active = true;
+           	    listOfLasers[i].active = false;
           	  }
-          	  
+          	}  
 	    // Wall behaviour ennemy
             if(ennemy.active )
             	
@@ -308,12 +334,7 @@ void UpdateGame(void)
                 }
                 
             }
-            if ((framesCounter%20) == 0)
-            {
-            	for (int i = 1; i < counterTail; i++) {
-            	   snake[i].color = GREEN;
-            	} 	
-            }
+            
             // Fruit position calculation
             if (!fruit.active)
             {
@@ -330,12 +351,15 @@ void UpdateGame(void)
                     }
                 }
             }
+            
+            
             // Gunfood position calculation
-            if (ennemy.kills == 3)
+           
+            if (ennemy.kills == 5)
             {
             	
                 ennemy.kills = 0;
-                gunfood.active=true;
+                
                
                 gunfood.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
 
@@ -394,19 +418,21 @@ void UpdateGame(void)
             if ((snake[0].position.x < (gunfood.position.x + gunfood.size.x) && (snake[0].position.x + snake[0].size.x) > gunfood.position.x) &&
                 (snake[0].position.y < (gunfood.position.y + gunfood.size.y) && (snake[0].position.y + snake[0].size.y) > gunfood.position.y))
             {
-                gameOver = true;
+            	gunfood.position = (Vector2) {-100,-100};
+                gunfood.active=true;
             }
             // Collision missile ennemy
-            if ((laser.position.x < (ennemy.position.x + ennemy.size.x) && (laser.position.x + laser.size.x) > ennemy.position.x) &&
-                (laser.position.y < (ennemy.position.y + ennemy.size.y) && (laser.position.y + laser.size.y) > ennemy.position.y))
+             for (int i =0; i<5;i++) {
+            if ((listOfLasers[i].position.x < (ennemy.position.x + ennemy.size.x) && (listOfLasers[i].position.x + listOfLasers[i].size.x) > ennemy.position.x) &&
+                (listOfLasers[i].position.y < (ennemy.position.y + ennemy.size.y) && (listOfLasers[i].position.y + listOfLasers[i].size.y) > ennemy.position.y))
             {
                 
-                laser.active = false;
+                listOfLasers[i].active = false;
                 ennemy.kills +=1;
                 ennemy.active = false;
                 
             }
-            
+            }
           
            
             
@@ -448,8 +474,9 @@ void DrawGame(void)
             for (int i = 0; i < counterTail; i++) DrawRectangleV(snake[i].position, snake[i].size, snake[i].color);
             
            // Draw laser
-            DrawRectangleV(laser.position, laser.size, laser.color);
-
+            for (int i =0; i<5;i++) {
+            DrawRectangleV(listOfLasers[i].position, listOfLasers[i].size, listOfLasers[i].color);
+	    }
             // Draw fruit to pick
             DrawRectangleV(fruit.position, fruit.size, fruit.color);
             
