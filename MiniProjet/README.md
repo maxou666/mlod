@@ -1,4 +1,7 @@
 # MiniProjet
+
+## Le jeu ?
+
   Le jeu choisi est Snake.
   L'amélioration est la présence d'ennemis qui veulent du mal au joueur.
   Le joueur pourra se défendre en tirant des lasers.
@@ -21,3 +24,7 @@
  ----COMMANDES----
  Pour se déplacer, le joueur utilisera les touches suivantes pour le déplacement correspondant : Z / monter; S / descendre; Q / gauche; D / droite.
  Pour utiliser le laser, il suffit d'appuyer sur ESPACE.
+ 
+  ## URL Vidéo
+  
+  https://www.youtube.com/watch?v=EZ5io_Sqt1w&ab_channel=Co-Meud
