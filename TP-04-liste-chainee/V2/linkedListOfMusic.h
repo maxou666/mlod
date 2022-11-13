@@ -10,11 +10,15 @@ typedef struct  {
 	char* Artist;
 	char* Album;
 	char* Genre;			
-	int Disc_Number;
-	int Track_Number;
-	int Year
+	char* Disc_Number;
+	char* Track_Number;
+	char* Year;
 } Music;		
 
+Music* infosMusique(char* ligne);
 
+Liste ListeDeMusiques(FILE* fichier, Liste listeMusique);
+
+Liste triListeParArg(Liste listeMusique, char* arg);
 
 

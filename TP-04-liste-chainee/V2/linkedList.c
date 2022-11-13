@@ -28,13 +28,9 @@ Liste ajoutTete(Element v, Liste l) {
 	return l;
 }
 
-bool equalsElement(Element e1, Element e2){
-	return (strcmp((char*)e1,(char*)e2)==0);
-}		
+	
 
-void detruireElement(Element e) {
-			
-}
+
 
 
 // affiche tous les éléments de la liste l

@@ -242,7 +242,7 @@ void UpdateGame(void)
               	  }
               }
       
-                // JE sais oas c est quoiallowMove = false;
+              
             
 
             // Snake movement
