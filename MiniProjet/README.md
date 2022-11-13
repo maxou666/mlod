@@ -8,6 +8,9 @@
   Snake peut tuer les ennemis, en leur tirant dessus avec son laser. Au bout de 5 ennemis tués, un nouveau fruit apparait ( carré jaune ). 
   Une fois récupéré, ce fruit permet à Snake de tirer plusieurs lasers.
   
+ ## Comment compiler ?
+  Comment exécuter ?
+# Comment utiliser le projet
   
  ----COMMANDES----
  Pour se déplacer, le joueur utilisera les touches suivantes pour le déplacement correspondant : Z / monter; S / descendre; Q / gauche; D / droite.
