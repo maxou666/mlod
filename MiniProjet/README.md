@@ -19,9 +19,8 @@
  
  ./snake
  
- ## Comment utiliser le projet
+ ## Commandes
   
- ----COMMANDES----
  Pour se déplacer, le joueur utilisera les touches suivantes pour le déplacement correspondant : Z / monter; S / descendre; Q / gauche; D / droite.
  Pour utiliser le laser, il suffit d'appuyer sur ESPACE.
  
