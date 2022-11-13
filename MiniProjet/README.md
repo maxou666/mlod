@@ -9,8 +9,14 @@
   Une fois récupéré, ce fruit permet à Snake de tirer plusieurs lasers.
   
  ## Comment compiler ?
-  Comment exécuter ?
-# Comment utiliser le projet
+ 
+ gcc -o snake snake.c -Wall -std=c99 -D_DEFAULT_SOURCE -Wno-missing-braces -Wunused-result -s -O1 -D_DEFAULT_SOURCE -I. -I/home/bot/Raylib.git/src -I/home/bot/Raylib.git/src/external -I/usr/local/include -L. -L/home/bot/Raylib.git/src -L/home/bot/Raylib.git/src -L/usr/local/lib -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -latomic -DPLATFORM_DESKTOP
+
+ ## Comment exécuter ?  
+ 
+ ./snake
+ 
+ ## Comment utiliser le projet
   
  ----COMMANDES----
  Pour se déplacer, le joueur utilisera les touches suivantes pour le déplacement correspondant : Z / monter; S / descendre; Q / gauche; D / droite.
